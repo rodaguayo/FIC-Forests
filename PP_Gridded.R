@@ -17,7 +17,7 @@ projection(sample) <- CRS("+init=epsg:4326")
 period <- seq(as.Date('2006-04-01'), as.Date('2019-03-31'), by = 'day')
 pp_shape<-shapefile("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/GIS/PP_stations.shp")
 
-pp_data<-read.csv("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Data/PP_data_qc.csv")
+pp_data<-read.csv("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Climate/PP_data_qc.csv")
 pp_data$Date<-as.Date(pp_data$Date)
 pp_data<-subset(pp_data, Date >= min(period) & Date <= max(period))
 
@@ -63,11 +63,16 @@ dem<-projectRaster(dem, to = sample)
 covariates <- list(dem=dem, cr2met=pp_cr2met, mswep = pp_mswep)
 
 pp_corrected <- RFmerge(x=pp_data_zoo, metadata=pp_info, cov=covariates, ED = TRUE, ntree = 1000,
-                        id="ID", lat="lat", lon="lon",  mask = area, training=1, write2disk=FALSE, parallel="parallelWin", par.nnodes = 6)
+                        id="ID", lat="lat", lon="lon",  mask = area, training=1, write2disk=FALSE, parallel="parallelWin", par.nnodes = 7)
 pp_corrected<-setZ(pp_corrected, period)
 pp_corrected<-setNames(pp_corrected, period)
 
-setwd("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Data/")
-writeRaster(pp_corrected, "PP_Corrected.nc", format = "CDF", datatype='INT2S', 
-            overwrite=TRUE, varname="pp", varunit="mm", xname="Longitude",   
-            yname="Latitude", zname="day")
+
+pp_corrected_m<-stackApply(pp_corrected, indices<-format(pp_corrected@z$time,"%y"), fun=sum)
+pp_corrected_m <- mean(pp_corrected_m[[-c(1,nlayers(pp_corrected_m))]])
+pp_corrected_m<-focal(pp_corrected_m, w=matrix(1, 7, 7), mean, pad = TRUE, na.rm =TRUE)
+
+setwd("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Climate/")
+raster::writeRaster(pp_corrected_m, "PP_mean.tif", format = "GTiff", overwrite = TRUE) 
+raster::writeRaster(pp_corrected, "PP_Corrected.nc", format = "CDF", datatype='INT2S', overwrite=TRUE, varname="pp", 
+            varunit="mm", xname="Longitude", yname="Latitude", zname="day")

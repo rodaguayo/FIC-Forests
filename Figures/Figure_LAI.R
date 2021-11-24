@@ -8,10 +8,6 @@ library("RColorBrewer")
 
 data<-read.csv("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Results/Basins_LAI.csv")
 
-mean_values<-data.frame(t(hydroTSM::monthlyfunction(data, date.fmt = "%Y-%m-%d", FUN = mean, na.rm = TRUE)))
-mean_values<-cbind(months = c(2,3,4,5,6,7,8,9,10,11,12,1), mean_values)
-mean_values<-mean_values[order(mean_values$months),] 
-
 for(j in 1:12) {
     data[which(as.numeric(format(data$date, "%m"))==j),2:23]<-data[which(as.numeric(format(data$date, "%m"))==j),2:23]-unlist(mean_values[j,2:23])
 }
@@ -20,7 +16,7 @@ f <- list(family = "Verdana", size = 22)
 f2 <- list(family = "Verdana", size = 18)
 
 x <- list(titlefont = f, tickfont = f2, ticks = "outside", type = 'date')
-y <- list(title = "LAI", titlefont = f, tickfont = f2, ticks = "outside", zeroline = FALSE)
+y <- list(title = "LAI", titlefont = f, tickfont = f2, ticks = "outside", zeroline = FALSE, dtick = 20, range = c(20,69))
 l <- list(orientation = 'h', xanchor ="center", y = 1.05, x = 0.5, font = f2)
 
 colors1<-brewer.pal(4, 'Greens')
@@ -50,8 +46,7 @@ fig <- subplot(fig1, fig2, fig3, fig4, nrows = 4, shareY = T, shareX = T, margin
 fig
 
 server <- orca_serve()
-server$export(fig, file = "Figure_Validation.pdf", width = 1200, height = 1000, scale = 3)
-server$export(fig, file = "Figure5_Validation.png", width = 1200, height = 1000, scale = 3)
+server$export(fig, file = "C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Figures/Figure_LAI.png", width = 1200, height = 1000, scale = 3)
 server$close()
 
 

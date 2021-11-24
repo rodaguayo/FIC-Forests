@@ -3,6 +3,7 @@ cat("\014")
 
 library("hydroGOF")
 library("raster")
+library("terra")
 library("readxl")
 library("RFmerge")
 library("zoo")
@@ -74,5 +75,6 @@ pp_corrected_m<-focal(pp_corrected_m, w=matrix(1, 7, 7), mean, pad = TRUE, na.rm
 
 setwd("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Climate/")
 raster::writeRaster(pp_corrected_m, "PP_mean.tif", format = "GTiff", overwrite = TRUE) 
-raster::writeRaster(pp_corrected, "PP_Corrected.nc", format = "CDF", datatype='INT2S', overwrite=TRUE, varname="pp", 
-            varunit="mm", xname="Longitude", yname="Latitude", zname="day")
+terra::writeCDF(rast(pp_corrected), "PP_Corrected.nc", overwrite=TRUE, varname="pp", unit="mm", 
+                longname="Precipitation", zname="time", compression = 9)
+

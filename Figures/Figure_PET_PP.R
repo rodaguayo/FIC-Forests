@@ -10,7 +10,7 @@ library("exactextractr")
 basins<-sf::st_read("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/GIS/Cuencas_N1_N11sel.shp")
 pet_corrected<-rast("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Climate/PET_Corrected.nc")
 pp_corrected<-rast("C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Climate/PP_Corrected.nc")
-time(pp_corrected)<-time(pet_corrected)
+terra::time(pp_corrected)<-terra::time(pet_corrected)
 
 pet_corrected <- tapp(pet_corrected, strftime(time(pet_corrected),format="%Y"), fun = sum)
 pp_corrected  <- tapp(pp_corrected, strftime(time(pp_corrected),format="%Y"), fun = sum)
@@ -33,16 +33,24 @@ f <- list(family = "Verdana", size = 22)
 f2 <- list(family = "Verdana", size = 18)
 
 x <- list(titlefont = f, tickfont = f2, ticks = "outside", type = 'date')
-y <- list(title = "PP - PET (mm)", titlefont = f, tickfont = f2, ticks = "outside", zeroline = FALSE)
+y <- list(title = "PP y PET (mm)", titlefont = f, tickfont = f2, ticks = "outside", zeroline = FALSE, dtick = 200)
+y2 <- list(title = "Deficit (mm)", titlefont = f, tickfont = f2, ticks = "outside", zeroline = FALSE,  dtick = 200)
 l <- list(orientation = 'h', xanchor ="center", y = 1.05, x = 0.5, font = f2)
 
-fig1 <- plot_ly(data, y = ~PP, x = ~DATE, type = 'scatter', mode = 'lines+markers', name = "PP", marker = list(size = 10))
-fig1 <- fig1 %>% add_trace(y = ~PET, mode = 'lines+markers', name = "PET", marker = list(size = 10))
+fig1 <- plot_ly(data, y = ~PP, x = ~DATE, type = 'scatter', mode = 'lines+markers', name = "PP", marker = list(size = 15, color = "#43a2ca"), line = list(width = 1, dash = 'dash', color = "#43a2ca"))
+fig1 <- fig1 %>% add_trace(y = ~PET, mode = 'lines+markers', name = "PET",  marker = list(size = 15, color = "#e34a33"), line = list(width = 1, dash = 'dash', color = "#e34a33"))
 fig1 <- fig1 %>% layout(xaxis = x, yaxis = y, legend = l)
 fig1
 
+fig2 <- plot_ly(data, showlegend = FALSE, y = ~PP-PET, x = ~DATE, type = 'bar', name = "Delta", color = ~PP-PET < 0, colors = c("#43a2ca", "#e34a33"))
+fig2 <- fig2 %>% layout(xaxis = x, yaxis = y2)
+fig2
+
+fig <- subplot(fig1, fig2, nrows = 2, shareX = T, titleY = T, margin = c(0.04, 0.04, 0.02, 0.02))
+fig
+
 server <- orca_serve()
-server$export(fig1, file = "C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Figures/Figure4_PET_PP.png", width = 900, height = 400, scale = 3)
+server$export(fig, file = "C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Figures/Figure4_PET_PP.png", width = 1000, height = 800, scale = 3)
 server$close()
 
 

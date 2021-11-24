@@ -61,6 +61,6 @@ fig <- subplot(fig1, fig2, fig3, fig4, nrows = 4, shareY = T, shareX = T, margin
 fig
 
 server <- orca_serve()
-server$export(fig, file = "C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Figures/Figure8_Streamflow.png", width = 1000, height = 1300, scale = 3)
+server$export(fig, file = "C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Figures/Figure8_Streamflow.png", width = 1100, height = 1200, scale = 3)
 server$close()
 

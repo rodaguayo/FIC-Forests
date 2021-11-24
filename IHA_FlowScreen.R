@@ -9,8 +9,9 @@ q_data<-subset(q_data, Date >= "2008-04-15")
 q_data<-subset(q_data, select =  c("Date","N04","N08", "N09", "N11"))
 
 options<-c("N04","N08", "N09", "N11")
-metrics_deg<-data.frame(matrix(0,1,3))
-colnames(metrics_deg)<-c("Metric","ID","P_value")
+metrics_deg<-data.frame(matrix(0,1,4))
+colnames(metrics_deg)<-c("Metric","ID","P_value", "Trend")
+
 metrics_agg<-data.frame(matrix(12,1,0))
 
 for(i in 1:4){
@@ -29,7 +30,7 @@ q_data_i<-create.ts(Flows = q_data_i, hyrstart = 4)
 metrics_i<-metrics.all(q_data_i, Season = c(12,1:5))
 
 for(j in 1:30){
-  metrics_deg<-rbind(metrics_deg,c(metrics_i$tcpRes[[j]]$MetricName,options[i],metrics_i$tcpRes[[j]]$pval))
+  metrics_deg<-rbind(metrics_deg,c(metrics_i$tcpRes[[j]]$MetricName,options[i],metrics_i$tcpRes[[j]]$pval, metrics_i$tcpRes[[j]]$Slope[2]))
   }
 
 summary_i<-screen.cpts(metrics_i, type = "a", text = NULL)
@@ -46,6 +47,9 @@ metrics_deg$P_value[metrics_deg$P_value<=0.01]<-0.01
 metrics_deg$P_value[metrics_deg$P_value>0.01 & metrics_deg$P_value<=0.05]<-0.05
 metrics_deg$P_value[metrics_deg$P_value>0.05 & metrics_deg$P_value<=0.1]<-0.1
 metrics_deg$P_value[metrics_deg$P_value>0.1]<-NA
+metrics_deg$Trend[is.na(metrics_deg$P_value)]<-NA
+metrics_deg$Trend[metrics_deg$Trend<=0]<-"-"
+metrics_deg$Trend[metrics_deg$Trend>=0]<-"+"
 
 write.csv(metrics_deg, "C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Results/Change_points_metrics_des.csv")
 write.csv(metrics_agg, "C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Results/Change_points_metrics.csv")

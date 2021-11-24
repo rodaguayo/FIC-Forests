@@ -26,5 +26,5 @@ fig
 
 
 server <- orca_serve()
-server$export(fig, file = "C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Figures/Figure7_PET_PP.png", width = 700, height = 1000, scale = 3)
+server$export(fig, file = "C:/Users/rooda/Dropbox/Proyectos/Nacimiento FIC/Figures/Figure7_PET_PP.png", width = 800, height = 900, scale = 3)
 server$close()

@@ -16,7 +16,7 @@ f <- list(family = "Verdana", size = 22)
 f2 <- list(family = "Verdana", size = 18)
 
 x <- list(titlefont = f, tickfont = f2, ticks = "outside", type = 'date')
-y <- list(title = "LAI", titlefont = f, tickfont = f2, ticks = "outside", zeroline = FALSE, dtick = 20, range = c(20,69))
+y <- list(title = "LAI", titlefont = f, tickfont = f2, ticks = "outside", zeroline = FALSE, dtick = 15, range = c(10,69))
 l <- list(orientation = 'h', xanchor ="center", y = 1.05, x = 0.5, font = f2)
 
 colors1<-brewer.pal(4, 'Greens')
